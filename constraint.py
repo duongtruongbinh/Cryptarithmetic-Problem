@@ -45,11 +45,15 @@ class TotalConstraint(Constraint):
             return True
 
         word_values = []
-        for word in self.words:
+        for i in range(len(self.words)):
             word_value = 0
-            for letter in word:
-                word_value = word_value * 10 + assignment[letter]
-            word_values.append(word_value)
+            for letter in self.words[i]:
+                word_value *= 10
+                word_value += assignment[letter]
+
+            word_values.append(
+                word_value*(-1) if self.words[i][0] == '-' else word_value)
+
         return sum(word_values[:-1]) == word_values[-1]
 
 

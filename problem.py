@@ -1,4 +1,3 @@
-import re
 import constraint
 
 
@@ -27,12 +26,72 @@ class CryptarithmeticProblem:
             else:
                 file.write("NO SOLUTION")
 
+    def normalize_equation(self, equation: str) -> str:
+        result = []
+        inside_parentheses = False
+
+        for char in equation:
+            if char.isalpha():
+                result.append(char)
+            elif char == '(':
+                inside_parentheses = result and result[-1] == '-'
+            elif char == ')':
+                inside_parentheses = False
+            elif inside_parentheses:
+                result.append('-' if char == '+' else '+')
+            else:
+                result.append(char)
+
+        return ''.join(result)
+
     def parse_input(self) -> tuple[list[str], list[str], list[str]]:
-        variables = list(set(re.findall(r'[A-Z]', self.equation)))
-        variables.sort()
-        words = re.findall(r'[A-Z]+', self.equation)
-        operators = re.findall(r'[+\-*]', self.equation)
-        return variables, words, operators
+        self.equation = self.normalize_equation(self.equation)
+        print(self.equation)
+        variables = []
+        words = []
+        operators = []
+        word = ''
+        if self.equation[0] == '-':
+            operators.append('-')
+            self.equation = self.equation[1:]
+        elif self.equation[0].isalpha():
+            operators.append('+')
+
+        for i in range(len(self.equation)):
+            if self.equation[i] == '+':
+                if self.equation[i+1] == '-':
+                    operators.append('-')
+                    words.append(word)
+                elif self.equation[i+1].isalpha() and self.equation[i-1].isalpha():
+                    operators.append('+')
+                    words.append(word)
+                word = ''
+                continue
+            elif self.equation[i] == '-':
+                if self.equation[i+1] == '-':
+                    operators.append('+')
+                    words.append(word)
+                elif self.equation[i+1].isalpha() and self.equation[i-1].isalpha():
+                    operators.append('-')
+                    words.append(word)
+                word = ''
+                continue
+            elif self.equation[i] == '=':
+                if self.equation[i+1] == '-':
+                    operators.append('-')
+
+                elif self.equation[i+1].isalpha():
+                    operators.append('+')
+                words.append(word)
+                word = ''
+                continue
+
+            elif self.equation[i].isalpha():
+                word += self.equation[i]
+                variables.append(self.equation[i])
+        words.append(word)
+
+        return set(variables), words, operators
 
     def solve(self) -> dict[str, int]:
         for constraint in self.constraints:
