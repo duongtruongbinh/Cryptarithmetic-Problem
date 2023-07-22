@@ -15,10 +15,6 @@ class CryptarithmeticProblem:
         for c in self.constraints:
             if c.preProcess():
                 self.constraints.remove(c)
-
-
-    def all_assigned(self):
-        return all(variable is not None for variable in self.variables)
     
     def check_subproblem(self, subproblem, impact, carry):
         positive, negative = 0, 0
@@ -56,14 +52,6 @@ class CryptarithmeticProblem:
             self.domains[char] = current_domain
         else:
             return self.solve_subproblem(subproblem, impact, charIndex + 1, spIndex, carry)
-
-    def is_consistent(self):
-        carry = 0
-        for subproblem, impact in zip(self.subproblems, self.impact):
-            carry = self.check_subproblem(subproblem, impact, carry)
-            if carry is None:
-                return False
-        return carry == 0
 
     def backtracking_search(self, index=0, carry=0):
         if len(self.variables) > 10:
