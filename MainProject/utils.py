@@ -1,9 +1,7 @@
-import sys, re
-
-def get_command_line_arguments() -> list:
-    return sys.argv[1:]
+import re
 
 def normalize_equation(equation: str) -> str:
+    equation = equation.upper()
     normalized = []
     inside_parentheses = False
     inside_multiplication = False
@@ -46,14 +44,15 @@ def normalize_equation(equation: str) -> str:
 def split_equation(equation: str) -> list:
     variables = {variable: None for variable in equation if variable.isalpha()}
     words = re.findall(r'[A-Z]+', equation)
-    operands, normalized = words[:-1], words[-1]
+    operands, result = words[:-1], words[-1]
     operators = re.findall(r'[+\-*]', equation)
     operators[:0] = ['+']
-    return [variables, operators, operands, normalized]
+    domains = {var: [i for i in range(10)] for var in variables}
+    return variables, domains, operators, operands, result
 
-def create_subproblem(operands, operators, normalized):
+def create_subproblem(operands, operators, result):
     # Calculate the maximum number of subproblems based on the length of the normalized and operands
-    max_subprob_length = max(len(normalized), max(len(operand) for operand in operands))
+    max_subprob_length = max(len(result), max(len(operand) for operand in operands))
     
     # Initialize subproblems and impact with empty lists and dictionaries
     subproblems = [[] for _ in range(max_subprob_length)]
@@ -65,14 +64,16 @@ def create_subproblem(operands, operators, normalized):
             offset = max_subprob_length - len(operand) + i
             if letter not in impact[offset]:
                 subproblems[offset].append(letter)
-            impact[offset][letter] = (operator == '-') 
+            impact[offset][letter] = impact[offset].get(letter, [0, 0])
+            impact[offset][letter][operator == '-'] += 1
 
     # Calculate impact and construct subproblems for the normalized
-    for i, letter in enumerate(normalized):
+    for i, letter in enumerate(result):
         offset = i
         if letter not in impact[offset]:
             subproblems[offset].append(letter)
-        impact[offset][letter] = True
+        impact[offset][letter] = impact[offset].get(letter, [0, 0])
+        impact[offset][letter][1] += 1
 
     # Reverse subproblems and impact to follow the original order
     subproblems.reverse()
