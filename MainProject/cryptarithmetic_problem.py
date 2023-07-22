@@ -21,16 +21,15 @@ class CryptarithmeticProblem:
         return all(variable is not None for variable in self.variables)
     
     def check_subproblem(self, subproblem, impact, carry):
-        positive, negative = 0, 0
+        total = 0
         for char in subproblem:
-            positive = positive + self.variables[char]*impact[char][0]
-            negative = negative + self.variables[char]*impact[char][1]
-        positive += carry
+            total += self.variables[char] * impact[char]
+        total += carry
 
-        if positive < 0 or (positive % 10 - negative % 10) != 0:
+        if total % 10 != 0:
             return None
 
-        return int(positive / 10) - int(negative / 10)
+        return total / 10
 
     def solve_subproblem(self, subproblem, impact, charIndex, spIndex, carry):
         if charIndex == len(subproblem):
