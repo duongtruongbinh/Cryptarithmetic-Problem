@@ -3,15 +3,15 @@ import problem
 
 # test deparenthesize
 
-abc = problem.CryptarithmeticProblem('Level 1/input_4.txt')
+problem = problem.CryptarithmeticProblem('Cryptarithmetic-Problem/Level 1/input_4.txt')
 
-print(abc.words)
-print(abc.operators)
-print(abc.variables)
-solution = abc.solve()
+print(problem.words)
+print(problem.operators)
+print(problem.variables)
+solution = problem.solve()
 print(solution)
 sorted_vars = sorted(solution.keys())
-for word in abc.words:
+for word in problem.words:
     for char in word:
         print(solution[char], end='')
     print(' ', end='')
