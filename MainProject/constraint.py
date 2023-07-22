@@ -13,7 +13,7 @@ class Constraint(ABC):
 class LeadingZeroConstraint(Constraint):
     def __init__(self, variables: dict, domains: defaultdict[list], operands: list, result: str):
         super().__init__(variables, domains)
-        self.leading_letters = [operand[0] for operand in operands if len(operand) > 1] + [result[0]]
+        self.leading_letters = [operand[0] for operand in operands if len(operand) > 1] + ([result[0]] if len(result) > 1 else [])
 
     def satisfied(self, char: str) -> list:
         domain = self.domains[char].copy()

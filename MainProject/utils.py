@@ -65,16 +65,14 @@ def create_subproblem(operands, operators, normalized):
             offset = max_subprob_length - len(operand) + i
             if letter not in impact[offset]:
                 subproblems[offset].append(letter)
-            impact[offset][letter] = impact[offset].get(letter, [0, 0])
-            impact[offset][letter][operator == '-'] += 1
+            impact[offset][letter] = (operator == '-') 
 
     # Calculate impact and construct subproblems for the normalized
     for i, letter in enumerate(normalized):
         offset = i
         if letter not in impact[offset]:
             subproblems[offset].append(letter)
-        impact[offset][letter] = impact[offset].get(letter, [0, 0])
-        impact[offset][letter][1] += 1
+        impact[offset][letter] = True
 
     # Reverse subproblems and impact to follow the original order
     subproblems.reverse()

@@ -1,7 +1,7 @@
 from cryptarithmetic_problem import CryptarithmeticProblem
 
 if __name__ == "__main__":
-    equation = "SEND+(MORE+MONEY)-OR+DIE=NUOYI"
+    equation = "S+M=MO"
     problem = CryptarithmeticProblem(equation)
     solution = problem.backtracking_search()
     if solution:
