@@ -1,7 +1,6 @@
 import re
 
 def normalize_equation(equation: str) -> str:
-    equation = equation.upper()
     normalized = []
     inside_parentheses = False
     inside_multiplication = False
@@ -10,16 +9,17 @@ def normalize_equation(equation: str) -> str:
         if char.isalpha():
             normalized.append(char)
         elif char == '(':
-            inside_parentheses = normalized and normalized[-1] == '-'
-            inside_multiplication = normalized and normalized[-1] == '*'
-            if inside_multiplication:
-                temp = []
-                for i in range(len(normalized) - 2, -1, -1):
-                    temp.append(normalized[i])
-                    if not normalized[i].isalpha():
-                        break
-                mul_operand = temp.copy()
-                mul_operand.reverse()
+            if normalized != []:
+                inside_parentheses = normalized and normalized[-1] == '-' 
+                inside_multiplication = normalized and normalized[-1] == '*' 
+                if inside_multiplication:
+                    temp = []
+                    for i in range(len(normalized) - 2, -1, -1):
+                        temp.append(normalized[i])
+                        if not normalized[i].isalpha():
+                            break
+                    mul_operand = temp.copy()
+                    mul_operand.reverse()
         elif char == ')':
             inside_parentheses, inside_multiplication = False, False
         elif inside_parentheses:
@@ -41,14 +41,26 @@ def normalize_equation(equation: str) -> str:
 
     return ''.join(normalized)
 
-def split_equation(equation: str) -> list:
-    variables = {variable: None for variable in equation if variable.isalpha()}
-    words = re.findall(r'[A-Z]+', equation)
-    operands, result = words[:-1], words[-1]
-    operators = re.findall(r'[+\-*]', equation)
-    operators[:0] = ['+']
-    domains = {var: [i for i in range(10)] for var in variables}
-    return variables, domains, operators, operands, result
+def parse_input(equation):
+        variables = {variable: None for variable in equation if variable.isalpha()}
+        domains = {var: [i for i in range(10)] for var in variables}
+        words = re.findall(r'[A-Z]+', equation)
+        operands, result  = words[:-1], words[-1]
+        operators = ['+']
+
+        for i in range(len(equation)):
+            if equation[i] == '+':
+                if equation[i+1] == '-':
+                    operators.append('-')
+                elif equation[i+1].isalpha() and equation[i-1].isalpha():
+                    operators.append('+')
+            elif equation[i] == '-':
+                if equation[i+1] == '-':
+                    operators.append('+')
+                elif equation[i+1].isalpha() and equation[i-1].isalpha():
+                    operators.append('-')
+                    
+        return [variables, domains, operators, operands, result]
 
 def create_subproblem(operands, operators, result):
     # Calculate the maximum number of subproblems based on the length of the normalized and operands
@@ -69,7 +81,7 @@ def create_subproblem(operands, operators, result):
 
     # Calculate impact and construct subproblems for the normalized
     for i, letter in enumerate(result):
-        offset = i
+        offset = max_subprob_length - len(result) + i
         if letter not in impact[offset]:
             subproblems[offset].append(letter)
         impact[offset][letter] = impact[offset].get(letter, [0, 0])
@@ -80,3 +92,17 @@ def create_subproblem(operands, operators, result):
     impact.reverse()
 
     return subproblems, impact
+
+def read_file(filepath: str) -> str:
+        with open(filepath, 'r') as file:
+            equation = file.readline()
+        return equation
+
+def write_file(filepath, solution) -> None:
+    with open(filepath, 'w') as file:
+        if solution:
+            vars = sorted(solution.keys())
+            for var in vars:
+                file.write(str(solution[var]))
+        else:
+            file.write("NO SOLUTION")

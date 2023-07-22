@@ -1,11 +1,11 @@
 from constraint import AlldiffConstraint, LeadingZeroConstraint
 from functools import reduce
-from utils import normalize_equation, split_equation, create_subproblem
+from utils import normalize_equation, parse_input, create_subproblem, read_file
 
 class CryptarithmeticProblem:
-    def __init__(self, equation):
-        equation = normalize_equation(equation)
-        self.variables, self.domains, self.operators, self.operands, self.result = split_equation(equation)
+    def __init__(self, file_path):
+        self.equation = normalize_equation(read_file(file_path))
+        self.variables, self.domains, self.operators, self.operands, self.result = parse_input(self.equation)
         self.constraints = [
             LeadingZeroConstraint(self.variables, self.domains, self.operands, self.result),
             AlldiffConstraint(self.variables, self.domains)
