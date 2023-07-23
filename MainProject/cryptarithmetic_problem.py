@@ -1,11 +1,11 @@
 from constraint import AlldiffConstraint, LeadingZeroConstraint
 from functools import reduce
-from utils import normalize_equation, split_equation, create_subproblem
+from utils import normalize_equation, parse_input, create_subproblem, read_file
 
 class CryptarithmeticProblem:
-    def __init__(self, equation):
-        equation = normalize_equation(equation)
-        self.variables, self.domains, self.operators, self.operands, self.result = split_equation(equation)
+    def __init__(self, file_path):
+        self.equation = normalize_equation(read_file(file_path))
+        self.variables, self.domains, self.operators, self.operands, self.result = parse_input(self.equation)
         self.constraints = [
             LeadingZeroConstraint(self.variables, self.domains, self.operands, self.result),
             AlldiffConstraint(self.variables, self.domains)
@@ -15,10 +15,6 @@ class CryptarithmeticProblem:
         for c in self.constraints:
             if c.preProcess():
                 self.constraints.remove(c)
-
-
-    def all_assigned(self):
-        return all(variable is not None for variable in self.variables)
     
     def check_subproblem(self, subproblem, impact, carry):
         total = 0
@@ -55,14 +51,6 @@ class CryptarithmeticProblem:
             self.domains[char] = current_domain
         else:
             return self.solve_subproblem(subproblem, impact, charIndex + 1, spIndex, carry)
-
-    def is_consistent(self):
-        carry = 0
-        for subproblem, impact in zip(self.subproblems, self.impact):
-            carry = self.check_subproblem(subproblem, impact, carry)
-            if carry is None:
-                return False
-        return carry == 0
 
     def backtracking_search(self, index=0, carry=0):
         if len(self.variables) > 10:
