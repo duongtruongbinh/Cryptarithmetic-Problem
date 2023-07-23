@@ -12,20 +12,13 @@ class CryptarithmeticProblem:
         ]
         self.subproblems, self.impact = create_subproblem(self.operands, self.operators, self.result)
         #preProcess
-        for c in self.constraints:
-            if c.preProcess():
-                self.constraints.remove(c)
+        for constraint in self.constraints:
+            if constraint.preProcess():
+                self.constraints.remove(constraint)
     
     def check_subproblem(self, subproblem, impact, carry):
-        total = 0
-        for char in subproblem:
-            total += self.variables[char] * impact[char]
-        total += carry
-
-        if total % 10 != 0:
-            return None
-
-        return total / 10
+        total = sum(self.variables[char] * impact[char] for char in subproblem) + carry
+        return total / 10 if total % 10 == 0 else None
 
     def solve_subproblem(self, subproblem, impact, charIndex, spIndex, carry):
         if charIndex == len(subproblem):
@@ -39,7 +32,6 @@ class CryptarithmeticProblem:
         
             common_domain = reduce(set.intersection, (set(c.satisfied(char)) for c in self.constraints))
             self.domains[char] = list(common_domain)
-            # print(self.domains[char])
 
             for val in self.domains[char]:
                 self.variables[char] = val

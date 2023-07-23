@@ -18,7 +18,7 @@ if __name__ == "__main__":
 #         print("No solution found")
 
     for level in range(1,2):
-        for i in range(1, 6):
+        for i in range(1,6):
             problem = CryptarithmeticProblem(
                 f'Cryptarithmetic-Problem/Level {level}/input_{i}.txt')
             print(problem.equation)
