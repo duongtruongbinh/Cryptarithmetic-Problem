@@ -3,39 +3,15 @@ import re
 def normalize_equation(equation: str) -> str:
     normalized = []
     inside_parentheses = False
-    inside_multiplication = False
-    mul_operand = []
     for char in equation:
         if char.isalpha():
             normalized.append(char)
         elif char == '(':
-            if normalized != []:
-                inside_parentheses = normalized and normalized[-1] == '-' 
-                inside_multiplication = normalized and normalized[-1] == '*' 
-                if inside_multiplication:
-                    temp = []
-                    for i in range(len(normalized) - 2, -1, -1):
-                        temp.append(normalized[i])
-                        if not normalized[i].isalpha():
-                            break
-                    mul_operand = temp.copy()
-                    mul_operand.reverse()
+            inside_parentheses = normalized and normalized[-1] == '-'      
         elif char == ')':
-            inside_parentheses, inside_multiplication = False, False
+            inside_parentheses = False
         elif inside_parentheses:
-            if char == '*':
-                normalized.append('*')
-            else:
-                normalized.append('-' if char == '+' else '+')
-        elif inside_multiplication:
-            if mul_operand[0] == '+':
-                if char == '-':
-                    mul_operand[0] = '-' 
-            else:
-                if char == '-':
-                    mul_operand[0] = '+' 
-            normalized.extend(mul_operand)
-            normalized.append('*')
+            normalized.append('-' if char == '+' else '+')
         else:
             normalized.append(char)
 
