@@ -40,26 +40,23 @@ def normalize_equation(equation: str) -> str:
 
     return ''.join(normalized)
 
+def tokenize_expression(expression):
+    # Sử dụng regular expression để tách chuỗi thành các thành phần (chữ cái và phép toán)
+    tokens = re.findall(r'[A-Z]+|[-+=*()]', expression)
+
+    # Xóa khoảng trắng nếu có
+    tokens = [token.strip() for token in tokens]
+
+    return tokens
+
 def parse_input(equation):
         variables = {variable: None for variable in equation if variable.isalpha()}
         domains = {var: [i for i in range(10)] for var in variables}
         words = re.findall(r'[A-Z]+', equation)
-        operands, result  = words[:-1], words[-1]
-        operators = ['+']
-
-        for i in range(len(equation)):
-            if equation[i] == '+':
-                if equation[i+1] == '-':
-                    operators.append('-')
-                elif equation[i+1].isalpha() and equation[i-1].isalpha():
-                    operators.append('+')
-            elif equation[i] == '-':
-                if equation[i+1] == '-':
-                    operators.append('+')
-                elif equation[i+1].isalpha() and equation[i-1].isalpha():
-                    operators.append('-')
-                    
-        return [variables, domains, operators, operands, result]
+        operands, result = words[:-1], words[-1]
+        expression, _  = equation.split('=')
+        expression = tokenize_expression(expression)
+        return [variables, domains, operands, expression, result]
 
 def create_subproblem(operands, operators, result):
     # Calculate the maximum number of subproblems based on the length of the normalized and operands
