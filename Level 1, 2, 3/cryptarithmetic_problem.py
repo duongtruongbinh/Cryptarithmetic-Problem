@@ -12,6 +12,9 @@ class CryptarithmeticProblem:
         ]
         self.subproblems, self.impact = create_subproblem(self.operands, self.operators, self.result)
         #preProcess
+        self.pre_process_constraints()
+
+    def pre_process_constraints(self):
         for constraint in self.constraints:
             if constraint.preProcess():
                 self.constraints.remove(constraint)
