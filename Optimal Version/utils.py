@@ -70,9 +70,9 @@ def create_subproblem(operands, operators, result):
     return subproblems, impact
 
 def read_file(filepath: str) -> str:
-        with open(filepath, 'r') as file:
-            equation = file.readline()
-        return equation
+    with open(filepath, 'r') as file:
+        equation = file.readline()
+    return equation
 
 def write_file(filepath, solution) -> None:
     with open(filepath, 'w') as file:

@@ -1,9 +1,11 @@
 from constraint import AlldiffConstraint, LeadingZeroConstraint, TotalConstraint
-from utils import parse_input
+from utils import *
 from poland import infix_to_prefix
 class CryptarithmeticProblem:
-    def __init__(self, equation):
-        self.variables, self.domains, self.operands, self.expression, self.result = parse_input(equation)
+    
+    def __init__(self, filepath):
+        self.equation = read_file(filepath)
+        self.variables, self.domains, self.operands, self.expression, self.result = parse_input(self.equation)
         self.prefix_expression = infix_to_prefix(self.expression)
         self.constraints = [
             AlldiffConstraint(self.variables, self.domains),
