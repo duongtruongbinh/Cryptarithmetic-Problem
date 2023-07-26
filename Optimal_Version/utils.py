@@ -29,19 +29,8 @@ def parse_input(equation):
     domains = {var: [i for i in range(10)] for var in variables}
     words = re.findall(r'[A-Z]+', equation)
     operands, result = words[:-1], words[-1]
-    operators = ['+']
-
-    for i in range(len(equation)):
-        if equation[i] == '+':
-            if equation[i+1] == '-':
-                operators.append('-')
-            elif equation[i+1].isalpha() and equation[i-1].isalpha():
-                operators.append('+')
-        elif equation[i] == '-':
-            if equation[i+1] == '-':
-                operators.append('+')
-            elif equation[i+1].isalpha() and equation[i-1].isalpha():
-                operators.append('-')
+    operators = re.findall(r'[+\-*]', equation)
+    operators[:0] = ['+']
 
     return [variables, domains, operators, operands, result]
 
