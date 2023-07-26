@@ -9,7 +9,7 @@ class CryptarithmeticProblem:
         self.constraints = [
             AlldiffConstraint(self.variables, self.domains),
             TotalConstraint(self.variables, self.domains, self.postfix_expression, self.result),
-            LeadingZeroConstraint(self.variables, self.domains, self.operands, self.result)
+            LeadingZeroConstraint(self.variables, self.domains, self.operands, self.result[1])
         ]
         self.pre_process_constraints()
 

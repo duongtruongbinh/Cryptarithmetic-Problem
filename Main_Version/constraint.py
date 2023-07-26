@@ -55,14 +55,15 @@ class TotalConstraint(Constraint):
             operand_values.append(result)
        
         left_side = evaluate_postfix(operand_values)
-        right_side = int(''.join(str(assignment[c]) for c in self.result))
+        right_side = int(''.join(str(assignment[c]) for c in self.result[1]))
+        right_side = right_side * (-1) if self.result[0] == '-' else right_side
         return left_side == right_side
 
 
 class LeadingZeroConstraint(Constraint):
     def __init__(self, variables, domains, operands, result):
         super().__init__(variables, domains)
-        self.leading_letters = [operand[0] for operand in operands if len(operand) > 1] + [result[0]]
+        self.leading_letters = [operand[0] for operand in operands] + [result[0]]
 
     def pre_process(self):
         for letter in self.leading_letters:
