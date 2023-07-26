@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from poland import evaluate_prefix
+from poland import evaluate_postfix
 
 class Constraint(ABC):
     def __init__(self, variables, domains):
@@ -33,10 +33,10 @@ class AlldiffConstraint(Constraint):
 
 
 class TotalConstraint(Constraint):
-    def __init__(self, variables, domains, prefix_expression, result):
+    def __init__(self, variables, domains, postfix_expression, result):
         super().__init__(variables, domains)
         self.result = result
-        self.prefix_expression = prefix_expression
+        self.postfix_expression = postfix_expression
 
     def pre_process(self):
         # Perform any pre-processing for the TotalConstraint if required.
@@ -47,14 +47,14 @@ class TotalConstraint(Constraint):
             return True
 
         operand_values = []
-        for element in self.prefix_expression:
+        for element in self.postfix_expression:
             if not element.isalpha():
                 operand_values.append(element)
                 continue
             result = ''.join(str(assignment[c]) for c in element)
             operand_values.append(result)
        
-        left_side = evaluate_prefix(operand_values)
+        left_side = evaluate_postfix(operand_values)
         right_side = int(''.join(str(assignment[c]) for c in self.result))
         return left_side == right_side
 

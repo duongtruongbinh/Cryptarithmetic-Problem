@@ -1,4 +1,8 @@
-import re
+import re, sys
+
+def get_command_line_arguments() -> list:
+    return sys.argv
+
 def tokenize_expression(expression):
     # Sử dụng regular expression để tách chuỗi thành các thành phần (chữ cái và phép toán)
     tokens = re.findall(r'[A-Z]+|[-+=*()]', expression)
