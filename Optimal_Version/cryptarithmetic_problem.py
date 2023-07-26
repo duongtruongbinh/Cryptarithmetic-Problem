@@ -19,13 +19,13 @@ class CryptarithmeticProblem:
             if constraint.preProcess():
                 self.constraints.remove(constraint)
     
-    def check_subproblem(self, subproblem, impact, carry):
-        total = sum(self.variables[char] * impact[char] for char in subproblem) + carry
+    def check_subproblem(self, impact, carry):
+        total = sum(self.variables[char] * impact[char] for char in impact) + carry
         return total / 10 if total % 10 == 0 else None
 
     def solve_subproblem(self, subproblem, impact, charIndex, spIndex, carry):
         if charIndex == len(subproblem):
-            new_carry = self.check_subproblem(subproblem, impact, carry)
+            new_carry = self.check_subproblem(impact, carry)
             return self.backtracking_search(spIndex + 1, new_carry) if new_carry is not None else None
 
         char = subproblem[charIndex]
