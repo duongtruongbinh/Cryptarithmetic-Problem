@@ -24,7 +24,7 @@ class CryptarithmeticProblem:
 
         unassigned_vars = [var for var in self.variables if var not in assignment]
 
-        var = self.get_next_variable(assignment, unassigned_vars)
+        var = self.get_next_variable(unassigned_vars)
         for value in self.get_ordered_values(var, assignment):
             assignment[var] = value
             if self.is_value_consistent(assignment):
@@ -35,7 +35,7 @@ class CryptarithmeticProblem:
 
         return None
 
-    def get_next_variable(self, assignment, unassigned_vars):
+    def get_next_variable(self, unassigned_vars):
         # MRV heuristic: Choose the variable with the fewest remaining values in its domain.
         return min(unassigned_vars, key=lambda var: len(self.domains[var]))
 

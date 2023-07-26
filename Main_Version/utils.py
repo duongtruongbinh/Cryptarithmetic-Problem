@@ -13,7 +13,7 @@ def tokenize_expression(expression):
     return tokens
 
 def parse_input(equation):
-        variables = {variable: None for variable in equation if variable.isalpha()}
+        variables = set(variable for variable in equation if variable.isalpha())
         domains = {var: [i for i in range(10)] for var in variables}
         words = re.findall(r'[A-Z]+', equation)
         operands, result = words[:-1], words[-1]
