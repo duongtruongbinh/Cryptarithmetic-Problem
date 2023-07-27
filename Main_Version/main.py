@@ -3,9 +3,13 @@ from utils import read_file, write_file, get_command_line_arguments
 import time
 
 if __name__ == "__main__":
-    
-    file_path= str(get_command_line_arguments()[1])
-    folder, file = file_path.split('/')
+
+    file_path = str(get_command_line_arguments()[1])
+    if '\\' in file_path:
+        folder, file = file_path.split('\\')
+    elif '/' in file_path:
+        folder, file = file_path.split('/')
+
     name, tail = file.split('.')
     _, index = name.split('_')
     equation = read_file(f'{file_path}')
@@ -15,13 +19,13 @@ if __name__ == "__main__":
 
     print(equation)
     print(problem.expression)
-    
+
     start_time = time.time()
     solution = problem.solve_cryptarithmetic({})
     end_time = time.time()
     execution_time = end_time - start_time
     print("Execution Time:", execution_time, "seconds")
-    
+
     write_file(f'{folder}/output_{index}.txt', solution)
     if solution:
         vars = sorted(solution.keys())
