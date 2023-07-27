@@ -4,7 +4,10 @@ import time
 
 if __name__ == "__main__":
     file_path = str(get_command_line_arguments()[1])
-    folder, file = file_path.split('/')
+    if '\\' in file_path:
+        folder, file = file_path.split('\\')
+    elif '/' in file_path:
+        folder, file = file_path.split('/')
     name, tail = file.split('.')
     _, index = name.split('_')
     equation = read_file(f'{file_path}')
