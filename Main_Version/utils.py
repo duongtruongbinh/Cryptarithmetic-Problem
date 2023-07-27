@@ -3,67 +3,84 @@ import re, sys
 def get_command_line_arguments() -> list:
     return sys.argv
 
-def normalize_equation(equation: str) -> str:
+def normalized_expression(expression):
     normalized = []
-    inside_parentheses = False
     inside_multiplication = False
-    mul_operand = []
-    
-    for i, char in enumerate(equation):
+    change_operator = False
+    i = 0
+    while i != len(expression):
         # Handling alphanumeric characters
-        if char.isalpha():
-            normalized.append(char)
-        elif char == '(':
-            if normalized:
-                # Check if inside parentheses and/or multiplication
-                inside_parentheses = normalized and normalized[-1] == '-' 
-                inside_multiplication = normalized and normalized[-1] == '*' 
-                if inside_multiplication:
-                    index = None
-                    # Copy the elements before the previous non-alphanumeric character
-                    for idx in range(len(normalized) - 2, -1, -1):
-                        if normalized[idx] in '+-*':
-                            index = idx
-                            break
-                    mul_operand = normalized[index : -1]
-        elif char == ')':
-            inside_parentheses, inside_multiplication = False, False
-        elif inside_parentheses:
-            # Handle signs inside parentheses
-            if char == '*':
-                normalized.append('*')
-            else:
-                normalized.append('-' if char == '+' else '+')
+        if expression[i].isalpha():
+            normalized.append(expression[i])
+        elif expression[i] == '(':
+            if expression[i-1] == '*':
+                inside_multiplication = True
+            normalized.append(expression[i])
+        elif expression[i] == ')':
+            inside_multiplication, change_operator = False, False
+            normalized.append(expression[i])
         elif inside_multiplication:
-            # Handle signs inside multiplication
-            temp = mul_operand.copy()
-            if char == '-':
-                temp[0] = '-' if mul_operand[0] == '+' else '+'
-                if equation[i-1] == '(':
-                    normalized= normalized[:index]  
-            normalized.extend(temp)
-            normalized.append('*')
+            if expression[i] == '-':
+                if expression[i-1] == '(':
+                    fe_idx, se_idx = 0, 0
+                    close_parentheses_idx = expression.find(')', i)
+                    for idx in range(i+1, close_parentheses_idx + 1): 
+                        if expression[idx] in '+-)':
+                            fe_idx = idx
+                            break
+                    f_operand = expression[i:fe_idx]
+                    
+                    plus_idx = expression.find('+', i, close_parentheses_idx)
+                    if plus_idx == -1:
+                        index = None
+                        # Copy the elements before the previous non-alphanumeric character
+                        for idx in range(len(normalized) - 1, -1, -1):
+                            if normalized[idx] in '+-':
+                                index = idx
+                                break
+                        normalized[index] = '-' if normalized[index] == '+' else '+'
+                        change_operator = True
+                    else:
+                        for idx in range(plus_idx + 1, close_parentheses_idx + 1):
+                            if expression[idx] in '+-)':
+                                se_idx = idx
+                                break
+                        s_operand = expression[plus_idx+1:se_idx]
+                        temp = s_operand + expression[fe_idx:plus_idx] + f_operand + expression[se_idx:close_parentheses_idx]
+                        expression = expression[:i] + temp + expression[close_parentheses_idx:]
+                        print(expression)
+                        continue
+                elif change_operator:
+                    normalized.append('+')
+                else:
+                    normalized.append(expression[i])
+            elif expression[i] == '+':
+                if change_operator:
+                    normalized.append('-')
+                else:
+                    normalized.append(expression[i])
         else:
-            # Handle signs outside parentheses or multiplication
-            if equation[i] == '+':
-                if equation[i+1] == '-':
+            if expression[i] == '+':
+                if expression[i+1] == '-':
                     normalized.append('-')
-                elif equation[i+1].isalpha() and equation[i-1] not in '+-*':
+                elif (expression[i+1].isalpha() or expression[i+1] == '(' or expression[i+1] == '+') and expression[i-1] not in '+-*':
                     normalized.append('+')
-            elif equation[i] == '-':
-                if equation[i+1] == '-':
+            elif expression[i] == '-':
+                if expression[i+1] == '-':
                     normalized.append('+')
-                elif equation[i+1].isalpha() and equation[i-1] not in '+-*':
+                elif (expression[i+1].isalpha() or expression[i+1] == '(' or expression[i+1] == '+') and expression[i-1] not in '+-*':
                     normalized.append('-')
-            elif equation[i] == '*':
+            elif expression[i] == '*':
                 index = None
                 for idx in range(len(normalized) - 1, -1, -1):
                     if normalized[idx] in '+-*':
                         index = idx
                         break
-                if equation[i+1] == '-':
+                if expression[i+1] == '-':
                     normalized[index] = '-' if normalized[index] == '+' else  '+'
-                normalized.append('*')                
+                normalized.append('*')   
+        i += 1             
+            
     return ''.join(normalized)
 
 def tokenize_expression(expression):
@@ -81,7 +98,7 @@ def parse_input(equation):
         words = re.findall(r'[A-Z]+', equation)
         operands, result = words[:-1], words[-1]
         expression, t_result  = equation.split('=')
-        expression = tokenize_expression(normalize_equation(expression))
+        expression = tokenize_expression(normalized_expression(expression))
         operator_result = '+' if t_result[0].isalpha() else '-'
         return [variables, domains, operands, expression, (operator_result, result)]
 

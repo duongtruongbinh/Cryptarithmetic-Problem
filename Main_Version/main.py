@@ -1,5 +1,5 @@
 from cryptarithmetic_problem import CryptarithmeticProblem
-from utils import read_file, write_file, get_command_line_arguments, normalize_equation
+from utils import read_file, write_file, get_command_line_arguments
 import time
 
 if __name__ == "__main__":
@@ -9,11 +9,10 @@ if __name__ == "__main__":
     name, tail = file.split('.')
     _, index = name.split('_')
     equation = read_file(f'{file_path}')
-
-
     print(equation)
     problem = CryptarithmeticProblem(equation)
     print(f'{file_path}')
+
     print(equation)
     print(problem.expression)
     
